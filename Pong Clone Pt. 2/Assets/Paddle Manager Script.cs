@@ -12,11 +12,15 @@ public class PaddleManagerScript : MonoBehaviour
     private float speed = 20.0f;
 
     public float min, max;
+    private float originalMin, originalMax;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         BoxCollider c = leftPaddle.GetComponent<BoxCollider>();
         min = c.bounds.min.z; max = c.bounds.max.z;
+        originalMin = min;
+        originalMax = max;
+        Debug.Log($"Min: {min} Max: {max}");
     }
 
     // Update is called once per frame
@@ -33,6 +37,11 @@ public class PaddleManagerScript : MonoBehaviour
         rightPaddle.transform.position = rPos;
     }
 
+    public void ResetPaddles()
+    {
+        min = originalMin;
+        max = originalMax;
+    }
     public void OnMoveLeftPaddle(InputAction.CallbackContext context)
     {
         lMove = context.ReadValue<float>();

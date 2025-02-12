@@ -1,10 +1,12 @@
 using System;
+using System.Timers;
 using UnityEngine;
 using Random = System.Random;
 
 public class PowerUpScript : MonoBehaviour
 {
-    public Material mat;
+    public PowerUpManagerScript manager;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -14,28 +16,9 @@ public class PowerUpScript : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
-    }
-
-    void Spawn()
-    {
-        Random rnd = new Random();
-        int type = rnd.Next(2);
-        if (type == 0)
-        {
-            mat.color = Color.red;
-            float randX = (float)(rnd.Next(-8, 8) + rnd.NextDouble()), 
-                randZ = (float)(rnd.Next(-15,15) + rnd.NextDouble());
-            Vector3 pos = new Vector3(randX, 1, randZ);
-            Instantiate(gameObject, pos, Quaternion.identity);
-        }
-        else if (type == 1)
-        {
-            mat.color = Color.green;
-            float randX = (float)(rnd.Next(-8, 8) + rnd.NextDouble()), 
-                randZ = (float)(rnd.Next(-15,15) + rnd.NextDouble());
-            Vector3 pos = new Vector3(randX, 1, randZ);
-            Instantiate(gameObject, pos, Quaternion.identity);
-        }
+        // transform.Rotate(0f, 60f * Time.deltaTime, 0f);
+        Vector3 currentRotate = transform.rotation.eulerAngles;
+        currentRotate.y += 60f * Time.deltaTime;
+        transform.rotation = Quaternion.Euler(currentRotate);
     }
 }

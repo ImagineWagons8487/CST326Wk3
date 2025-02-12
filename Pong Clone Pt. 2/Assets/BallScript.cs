@@ -5,10 +5,9 @@ using UnityEngine;
 public class BallScript : MonoBehaviour
 {
     private Vector3 direction;
-    private float timePassed;
     private Vector3 originalPaddleScale;
 
-    private float speed;
+    public float speed;
 
     public PaddleManagerScript paddleManager;
 
@@ -16,29 +15,26 @@ public class BallScript : MonoBehaviour
 
     public CameraScript cScript;
 
-    public GameObject ballParticle;
-
     public AudioSource hitSound;
+    
+    public GameObject ballParticle;
+    public BackgroundScript bg;
+
+    private Vector3 originalScale;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         direction = new Vector3(1f, 0f, 0f);
         speed = 10f;
         mat.color = Color.white;
-        timePassed = 0f;
         originalPaddleScale = paddleManager.leftPaddle.transform.localScale;
+        originalScale = transform.localScale;
     }
 
     // Update is called once per frame
     void Update()
     {
         transform.position += direction * (Time.deltaTime * speed);
-        timePassed += Time.deltaTime;
-        if (timePassed >= .1f/speed)
-        {
-            Instantiate(ballParticle, transform.position, Quaternion.identity);
-            timePassed = 0;
-        }
     }
 
     public void ResetBall(float dir)
@@ -50,12 +46,15 @@ public class BallScript : MonoBehaviour
         hitSound.pitch = 1f;
         paddleManager.leftPaddle.transform.localScale = originalPaddleScale;
         paddleManager.rightPaddle.transform.localScale = originalPaddleScale;
+        paddleManager.ResetPaddles();
+        transform.localScale = originalScale;
+        ballParticle.transform.localScale = originalScale;
     }
     private void OnCollisionEnter(Collision other)
     {
         if (other.gameObject.name is "LPaddle" or "RPaddle")
         {
-            speed *= 1.4f;
+            speed *= 1.2f;
             hitSound.pitch += .1f;
             direction *= -1;
             float max = paddleManager.max;
@@ -89,11 +88,11 @@ public class BallScript : MonoBehaviour
             direction.z *= -1;
             cScript.Shake(speed/3);
         }
-        else if(other.gameObject.name is "PowerUp")
+        else if(other.gameObject.name is "PowerUp(Clone)")
         {
             if (other.gameObject.GetComponent<Renderer>().material.color == Color.red)
             {
-                speed *= 1.4f;
+                speed *= 1.2f;
                 hitSound.pitch += .1f;
                 if (mat.color.g == 0)
                 {
@@ -103,6 +102,7 @@ public class BallScript : MonoBehaviour
                 {
                     mat.color = new Color(1, mat.color.g - .2f, mat.color.b - .2f, 1);
                 }
+                bg.FlashColor(Color.red);
             }
             else if (other.gameObject.GetComponent<Renderer>().material.color == Color.green)
             {
@@ -110,7 +110,17 @@ public class BallScript : MonoBehaviour
                     rightScale = paddleManager.rightPaddle.transform.localScale;
                 paddleManager.leftPaddle.transform.localScale = new Vector3(1, 1, leftScale.z + 2);
                 paddleManager.rightPaddle.transform.localScale = new Vector3(1, 1, rightScale.z + 2);
+                BoxCollider c = paddleManager.leftPaddle.GetComponent<BoxCollider>();
+                paddleManager.min -= 1; paddleManager.max += 1;
+                bg.FlashColor(Color.green);
             }
+            else if (other.gameObject.GetComponent<Renderer>().material.color == Color.magenta)
+            {
+                transform.localScale *= .7f;
+                ballParticle.transform.localScale *= .7f;
+                bg.FlashColor(Color.magenta);
+            }
+            Destroy(other.gameObject);
         }
     }
 }

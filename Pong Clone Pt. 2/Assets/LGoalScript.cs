@@ -20,8 +20,7 @@ public class LGoalScript : MonoBehaviour
     {
         if (other.gameObject.name == "Ball")
         {
-            lScore.lScore++;
-            lScore.UpdateScore();
+            lScore.UpdateScore("left");
             ball.ResetBall(-1);
             Debug.Log($"Right side player scored. Current Score:{lScore.lScore}  -  {lScore.rScore}");
         }

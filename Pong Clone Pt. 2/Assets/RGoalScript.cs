@@ -22,8 +22,7 @@ public class RGoalScript : MonoBehaviour
     {
         if (other.gameObject.name == "Ball")
         {
-            rScore.rScore++;
-            rScore.UpdateScore();
+            rScore.UpdateScore("right");
             ball.ResetBall(1);
             Debug.Log($"Right side player scored. Current Score:{rScore.lScore}  -  {rScore.rScore}");
         }
